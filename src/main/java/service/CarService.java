@@ -1,5 +1,7 @@
 package service;
 
+import factory.CarFetcherFactory;
+import factory.FetcherFactory;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
@@ -10,6 +12,7 @@ import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import repository.Repository;
+import service.api.Fetcher;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,14 +27,14 @@ public class CarService {
 
     private final Validator validator;
     private final Repository<Car> repository;
-    private final Fetcher scraper;
+    private final Fetcher fetcher;
 
-    public CarService(Repository<Car> repository, Fetcher scraper) {
+    public CarService(Repository<Car> repository, String fetcherType) {
         this.repository = repository;
-        this.scraper = scraper;
+        FetcherFactory fetcherFactory = new CarFetcherFactory();
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         this.validator = factory.getValidator();
-
+        this.fetcher = fetcherFactory.getCarFetcher(fetcherType);
     }
 
     public void addFetchedCars(String url) {
@@ -41,7 +44,7 @@ public class CarService {
 
     private List<Car> parseCars(String url) {
         List<Car> cars = new ArrayList<>();
-        Elements carElements = scraper.getCarElements(url);
+        Elements carElements = fetcher.getCarElements(url);
 
         for (Element carElement : carElements) {
             String makeAndYear = carElement.getElementsByClass("js-item-ad").text();
@@ -50,7 +53,7 @@ public class CarService {
 
             String[] parts = makeAndYear.split(", ");
             String make = parts[0].trim();
-            String year = parts.length > 1 ? parts[1].replace(" г.", "").trim() : scraper.getYearFromDetails(carElement);
+            String year = parts.length > 1 ? parts[1].replace(" г.", "").trim() : fetcher.getYearFromDetails(carElement);
             String price = carElement.getElementsByClass("ads-list-photo-item-price-wrapper")
                     .text()
                     .replace(" €", "")
