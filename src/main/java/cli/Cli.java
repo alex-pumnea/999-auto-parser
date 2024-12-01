@@ -44,9 +44,10 @@ public class Cli {
     }
 
     void displayResults() {
-        if (!cars.isEmpty()) {
-            cars.forEach(car -> logger.info("Fetched car: {}", car));
+        if (cars.isEmpty()) {
+            logger.info("No cars found");
+            return;
         }
-        logger.info("No cars found");
+        cars.forEach(car -> logger.info("Fetched car: {}", car));
     }
 }
