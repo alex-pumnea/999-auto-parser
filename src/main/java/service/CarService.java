@@ -59,7 +59,13 @@ public class CarService {
                     .replace(" €", "")
                     .replace("$", "")
                     .replaceAll("\\s", "");
-            Car car = new Car(make, year, price);
+
+            Car car = new Car.Builder()
+                    .setMake(make)
+                    .setYear(year)
+                    .setPrice(price)
+                    .build();
+
             validateCar(car);
             cars.add(car);
         }
