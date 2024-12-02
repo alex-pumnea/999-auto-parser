@@ -1,9 +1,6 @@
 package controller;
 
-import model.Car;
 import service.CarService;
-
-import java.util.List;
 
 /**
  * @author Alex Pumnea
@@ -15,7 +12,11 @@ public class CarController {
         this.carService = carService;
     }
 
-    public List<Car> getAll(String url) {
-        return carService.getAll(url);
+    public void outputFetchedData(String type) {
+        carService.outputFetchedData(type);
+    }
+
+    public void fetchData(String url) {
+        carService.fetchCars(url);
     }
 }
